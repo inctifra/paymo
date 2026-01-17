@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>payMO | Wallet Operations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mp-primary: #00D094;
+            --mp-dark: #09090B;
+            --mp-surface: #FFFFFF;
+            --mp-border: #E4E4E7;
+            --mp-muted: #71717A;
+            --mp-bg: #F8F9FB;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
+            --transition-speed: 0.3s;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--mp-bg); color: var(--mp-dark); margin: 0; }
+
+        /* --- Sidebar Base --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            background: white;
+            border-right: 1px solid var(--mp-border);
+            z-index: 1000;
+            transition: width var(--transition-speed) ease;
+            overflow-x: hidden;
+        }
+
+        .sidebar-link {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+            white-space: nowrap;
+        }
+
+        .sidebar-link i { 
+            font-size: 1.25rem; 
+            min-width: 30px; 
+            margin-right: 15px;
+            display: inline-block;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            color: var(--mp-primary);
+            background: #f0fffb;
+            border-left: 4px solid var(--mp-primary);
+        }
+
+        .main-content { 
+            margin-left: var(--sidebar-width); 
+            padding: 40px; 
+            transition: margin-left var(--transition-speed) ease;
+        }
+
+        /* --- Automatic Mobile/Small Screen Mode --- */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+                padding: 20px;
+            }
+
+            /* Hide text and long logo parts */
+            .link-text, .logo-ext, .system-status-text {
+                display: none;
+            }
+
+            .sidebar-link {
+                justify-content: center;
+                padding: 15px 0;
+                border-left-width: 0;
+                border-bottom: 2px solid transparent;
+            }
+            
+            .sidebar-link.active {
+                border-bottom: 2px solid var(--mp-primary);
+                background: #f0fffb;
+            }
+
+            .sidebar-link i {
+                margin-right: 0;
+            }
+
+            .sidebar .p-4 {
+                text-align: center;
+                padding: 1.5rem 0.5rem !important;
+            }
+        }
+
+        /* --- Wallet UI Components --- */
+        .wallet-hero {
+            background: var(--mp-dark);
+            border-radius: 32px;
+            padding: 50px;
+            color: white;
+            position: relative;
+            margin-bottom: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .ops-card { background: white; border-radius: 24px; border: 1px solid var(--mp-border); padding: 30px; height: 100%; }
+        
+        .ledger-tabs .nav-link { 
+            border: none; color: var(--mp-muted); font-weight: 700; padding: 15px 25px; 
+            border-bottom: 3px solid transparent; border-radius: 0;
+        }
+        .ledger-tabs .nav-link.active { color: var(--mp-primary); border-bottom-color: var(--mp-primary); background: transparent; }
+
+        .step-header { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
+        .step-header::after { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 2px; background: #E4E4E7; z-index: 1; }
+        .step-bullet { 
+            width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid #E4E4E7; 
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;
+            position: relative; z-index: 2; transition: 0.3s;
+        }
+        .step-bullet.active { border-color: var(--mp-primary); background: var(--mp-primary); color: white; }
+
+        .modal-xl-custom { max-width: 900px; }
+        .modal-content { border-radius: 32px; border: none; }
+        .pane-step { display: none; }
+        .pane-step.active { display: block; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .method-select { 
+            border: 2px solid var(--mp-border); border-radius: 20px; padding: 20px; 
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center;
+        }
+        .method-select:hover { border-color: var(--mp-primary); background: #F0FDFA; }
+
+        .data-label { font-size: 12px; font-weight: 700; color: var(--mp-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-value { font-weight: 600; color: var(--mp-dark); }
+    </style>
+</head>
+<body>
+
+<div class="sidebar d-flex flex-column">
+    <div class="p-4 mb-4">
+        <h3 class="fw-bold" style="color: var(--mp-primary);">p<span class="logo-ext">ay</span><span style="color: var(--mp-dark);">M<span class="logo-ext">O</span></span></h3>
+    </div>
+    
+    <a href="dash.html" class="sidebar-link" title="Dashboard">
+        <i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span>
+    </a>
+    <a href="trans3.html" class="sidebar-link" title="Transactions">
+        <i class="bi bi-arrow-left-right"></i> <span class="link-text">Transactions</span>
+    </a>
+    <a href="card1.html" class="sidebar-link" title="Cards & Pay">
+        <i class="bi bi-credit-card-2-front"></i> <span class="link-text">Cards & Pay</span>
+    </a>
+    <a href="wallet1.html" class="sidebar-link active" title="Wallet">
+        <i class="bi bi-wallet2"></i> <span class="link-text">Wallet</span>
+    </a>
+    <a href="account2.html" class="sidebar-link" title="Account">
+        <i class="bi bi-person-gear"></i> <span class="link-text">Account</span>
+    </a>
+    <a href="support.html" class="sidebar-link" title="Support">
+        <i class="bi bi-headset"></i> <span class="link-text">Support</span>
+    </a>
+    
+    <div class="mt-auto p-4 system-status">
+        <div class="d-flex align-items-center justify-content-center bg-light p-2 rounded-3">
+            <div class="rounded-circle bg-success" style="width:10px; height:10px;"></div>
+            <small class="text-muted ms-2 system-status-text">Operational</small>
+        </div>
+    </div>
+</div>
+<div class="main-content">
+    
+    <div class="wallet-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <p class="text-white-50 fw-bold mb-1">SETTLED WALLET BALANCE</p>
+                <h1 class="display-3 fw-800 mb-0">$84,250.00</h1>
+                <div class="mt-3 d-flex gap-3">
+                    <span class="badge bg-success bg-opacity-25 text-success p-2">Tier 3 Verified</span>
+                    <span class="text-white-50 small mt-1"><i class="bi bi-info-circle me-1"></i> Daily Limit: $50,000.00</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-light btn-lg px-4 py-3 fw-bold rounded-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#operationsModal">
+                    Transfer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="ops-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-800 mb-0">Unified Ledger</h4>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm rounded-3">Export CSV</button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-3">Filter</button>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs ledger-tabs mb-4" id="ledgerTabs">
+                    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all">All Activity</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#deposits">Deposits</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#withdrawals">Withdrawals</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#currency">Currency Swaps</button></li>
+                </ul>
+
+                <div class="tab-content pt-2">
+                    <div class="tab-pane fade show active" id="all">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr class="small text-muted">
+                                        <th>TRANSACTION ID</th>
+                                        <th>TYPE</th>
+                                        <th>STATUS</th>
+                                        <th>METHOD</th>
+                                        <th>DATE</th>
+                                        <th class="text-end">AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold">TXN-99201</td>
+                                        <td><span class="badge bg-success bg-opacity-10 text-success">Deposit</span></td>
+                                        <td><i class="bi bi-check-circle-fill text-success me-2"></i>Success</td>
+                                        <td>Bank Transfer (Chase)</td>
+                                        <td>Jan 14, 2026</td>
+                                        <td class="text-end fw-bold">+$5,000.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">TXN-99195</td>
+                                        <td><span class="badge bg-danger bg-opacity-10 text-danger">Withdrawal</span></td>
+                                        <td><i class="bi bi-clock-history text-warning me-2"></i>Pending</td>
+                                        <td>External Wallet</td>
+                                        <td>Jan 13, 2026</td>
+                                        <td class="text-end fw-bold">-$1,200.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">TXN-98820</td>
+                                        <td><span class="badge bg-primary bg-opacity-10 text-primary">Exchange</span></td>
+                                        <td><i class="bi bi-check-circle-fill text-success me-2"></i>Success</td>
+                                        <td>USD to BTC</td>
+                                        <td>Jan 10, 2026</td>
+                                        <td class="text-end fw-bold">$2,450.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="ops-card">
+                <h5 class="fw-bold mb-4">Withdrawal Limits</h5>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small fw-bold">Daily Limit ($12,400 of $50,000)</span>
+                        <span class="small text-muted">24.8%</span>
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 10px;">
+                        <div class="progress-bar bg-primary" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div class="p-3 bg-light rounded-4 d-flex align-items-center">
+                    <i class="bi bi-shield-lock-fill text-primary fs-3 me-3"></i>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Upgrade to Tier 4</h6>
+                        <p class="small text-muted mb-0">Verify your address to unlock $250k daily limits.</p>
+                    </div>
+                    <button class="btn btn-dark btn-sm ms-auto rounded-3 px-3">Upgrade</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="ops-card">
+                <h5 class="fw-bold mb-4">Wallet Security Status</h5>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 border rounded-4 text-center">
+                            <i class="bi bi-phone-vibrate text-success fs-3"></i>
+                            <p class="small fw-bold mt-2 mb-0">2FA Active</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 border rounded-4 text-center">
+                            <i class="bi bi-envelope-check text-success fs-3"></i>
+                            <p class="small fw-bold mt-2 mb-0">Email Verified</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="operationsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+        <div class="modal-content overflow-hidden">
+            <div class="row g-0">
+                <div class="col-md-4 bg-dark text-white p-5 d-none d-md-block">
+                    <h3 class="fw-bold mb-4">Operations Hub</h3>
+                    <p class="text-white-50 small mb-5">Move your funds globally with real-time settlement and bank-grade security protocols.</p>
+                    
+                    <div class="mb-4 d-flex align-items-center">
+                        <div class="bg-success bg-opacity-25 rounded p-2 me-3"><i class="bi bi-lightning-charge text-success"></i></div>
+                        <div><h6 class="mb-0 fw-bold small">Instant Settlement</h6><p class="text-white-50 x-small mb-0">Most transfers take < 2 mins.</p></div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-25 rounded p-2 me-3"><i class="bi bi-shield-check text-primary"></i></div>
+                        <div><h6 class="mb-0 fw-bold small">Insured Funds</h6><p class="text-white-50 x-small mb-0">Covered up to $250,000 USD.</p></div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 p-5">
+                    <ul class="nav nav-pills bg-light p-1 rounded-4 mb-5" id="opActionTabs">
+                        <li class="nav-item flex-fill"><button class="nav-link active w-100 fw-bold" data-bs-toggle="tab" data-bs-target="#depositFlow">Deposit</button></li>
+                        <li class="nav-item flex-fill"><button class="nav-link w-100 fw-bold" data-bs-toggle="tab" data-bs-target="#withdrawFlow">Withdraw</button></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="depositFlow">
+                            <div class="step-header">
+                                <div class="step-bullet active" id="d-s1">1</div>
+                                <div class="step-bullet" id="d-s2">2</div>
+                                <div class="step-bullet" id="d-s3">3</div>
+                                <div class="step-bullet" id="d-s4">4</div>
+                                <div class="step-bullet" id="d-s5">5</div>
+                            </div>
+
+                            <div class="pane-step active" id="ds1">
+                                <h5 class="fw-bold mb-4">Step 1: Choose Funding Source</h5>
+                                <div class="method-select mb-3" onclick="navigate('d', 2)">
+                                    <i class="bi bi-bank fs-3 text-primary me-4"></i>
+                                    <div><h6 class="mb-0 fw-bold">Bank Transfer (ACH/Wire)</h6><p class="small text-muted mb-0">Fees: $0.00 • 1-2 Business Days</p></div>
+                                </div>
+                                <div class="method-select" onclick="navigate('d', 2)">
+                                    <i class="bi bi-phone-flip fs-3 text-success me-4"></i>
+                                    <div><h6 class="mb-0 fw-bold">Mobile Money (M-Pesa/Airtel)</h6><p class="small text-muted mb-0">Fees: 1.5% • Instant Arrival</p></div>
+                                </div>
+                            </div>
+
+                            <div class="pane-step" id="ds2">
+                                <h5 class="fw-bold mb-4">Step 2: Enter Deposit Amount</h5>
+                                <div class="mb-4">
+                                    <label class="data-label">Amount in USD</label>
+                                    <input type="number" class="form-control border-0 bg-light p-4 fs-2 fw-800" placeholder="0.00">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-light flex-fill py-3" onclick="navigate('d', 1)">Back</button>
+                                    <button class="btn btn-dark flex-fill py-3" onclick="navigate('d', 3)">Next: Source Details</button>
+                                </div>
+                            </div>
+
+                            <div class="pane-step" id="ds3">
+                                <h5 class="fw-bold mb-4">Step 3: Verification Details</h5>
+                                <div class="mb-4">
+                                    <label class="data-label">Your External Account No. / Phone</label>
+                                    <input type="text" class="form-control border-0 bg-light p-3" placeholder="e.g. +254 7XX XXX XXX">
+                                    <p class="small text-muted mt-2"><i class="bi bi-info-circle"></i> Ensure the name on this account matches your payMO profile.</p>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-light flex-fill py-3" onclick="navigate('d', 2)">Back</button>
+                                    <button class="btn btn-dark flex-fill py-3" onclick="navigate('d', 4)">Review Charges</button>
+                                </div>
+                            </div>
+
+                            <div class="pane-step" id="ds4">
+                                <h5 class="fw-bold mb-4">Step 4: Charges & Duration</h5>
+                                <div class="bg-light p-4 rounded-4 mb-4">
+                                    <div class="d-flex justify-content-between mb-2"><span class="data-label">Transaction Fee</span><span class="data-value">$4.50</span></div>
+                                    <div class="d-flex justify-content-between mb-2"><span class="data-label">Provider Fee</span><span class="data-value">$0.00</span></div>
+                                    <div class="d-flex justify-content-between mb-3"><span class="data-label">Settlement Period</span><span class="data-value">Instant</span></div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between"><span class="fw-bold">Net Deposit</span><span class="fw-800 text-primary">$495.50</span></div>
+                                </div>
+                                <button class="btn btn-success w-100 py-3 fw-bold rounded-4" onclick="processOp('d')">Confirm Deposit</button>
+                            </div>
+
+                            <div class="pane-step text-center" id="ds5">
+                                <div id="d-processing">
+                                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+                                    <h4 class="fw-bold">Initiating Transfer</h4>
+                                    <p class="text-muted">Connecting to payment gateway...</p>
+                                </div>
+                                <div id="d-success" style="display: none;">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex p-4 mb-4"><i class="bi bi-check-lg fs-1"></i></div>
+                                    <h3 class="fw-800">Success!</h3>
+                                    <p class="text-muted">Your deposit is being processed. Funds should appear in your ledger within 2 minutes.</p>
+                                    <button class="btn btn-dark w-100 py-3 mt-3" data-bs-dismiss="modal">Return to Dashboard</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="withdrawFlow">
+                            <div class="step-header">
+                                <div class="step-bullet active" id="w-s1">1</div>
+                                <div class="step-bullet" id="w-s2">2</div>
+                                <div class="step-bullet" id="w-s3">3</div>
+                                <div class="step-bullet" id="w-s4">4</div>
+                                <div class="step-bullet" id="w-s5">5</div>
+                            </div>
+                            <div class="pane-step active" id="ws1">
+                                <h5 class="fw-bold mb-4">Step 1: Withdrawal Target</h5>
+                                <div class="method-select mb-3" onclick="navigate('w', 2)">
+                                    <i class="bi bi-globe fs-3 text-primary me-4"></i>
+                                    <div><h6 class="mb-0 fw-bold">International Bank Account</h6><p class="small text-muted mb-0">SWIFT/SEPA • 2-3 Days</p></div>
+                                </div>
+                                <div class="method-select" onclick="navigate('w', 2)">
+                                    <i class="bi bi-lightning-fill fs-3 text-warning me-4"></i>
+                                    <div><h6 class="mb-0 fw-bold">Mobile Wallet</h6><p class="small text-muted mb-0">Mpesa/Airtel Money Network • ~1 Mins</p></div>
+                                </div>
+                            </div>
+                            <div class="pane-step" id="ws2">
+                                <h5 class="fw-bold mb-4">Step 2: Withdrawal Amount</h5>
+                                <div class="mb-4 text-center">
+                                    <small class="text-muted fw-bold">AVAILABLE: $84,250.00</small>
+                                    <input type="number" class="form-control border-0 bg-light p-4 fs-2 fw-800 mt-2 text-center" placeholder="0.00">
+                                </div>
+                                <button class="btn btn-dark w-100 py-3" onclick="navigate('w', 3)">Next: Authentication</button>
+                            </div>
+                            <div class="pane-step" id="ws3">
+                                <h5 class="fw-bold mb-4">Step 3: 2FA/PIN Authentication</h5>
+                                <p class="text-muted">Enter the 6-digit code sent to your phone to authorize this withdrawal.</p>
+                                <div class="d-flex justify-content-between gap-2 mb-4">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                    <input type="text" class="form-control text-center p-3 fs-3 fw-bold" maxlength="1">
+                                </div>
+                                <button class="btn btn-dark w-100 py-3" onclick="navigate('w', 4)">Verify & Continue</button>
+                            </div>
+                            <div class="pane-step" id="ws4">
+                                <h5 class="fw-bold mb-4">Step 4: Review Network Fees</h5>
+                                <div class="bg-warning bg-opacity-10 p-4 rounded-4 mb-4">
+                                    <div class="d-flex justify-content-between mb-2"><span>Platform Fee</span><span class="fw-bold">$0.00</span></div>
+                                    <div class="d-flex justify-content-between mb-2"><span>Network Gas Fee</span><span class="fw-bold">$12.45</span></div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold"><span>Total to Receive</span><span class="fs-5">$XX,XXX.XX</span></div>
+                                </div>
+                                <button class="btn btn-danger w-100 py-3 fw-bold" onclick="processOp('w')">Execute Withdrawal</button>
+                            </div>
+                            <div class="pane-step text-center" id="ws5">
+                                <div id="w-processing">
+                                    <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+                                    <h4 class="fw-bold">Transmitting to Network</h4>
+                                    <p class="text-muted">Waiting for network confirmations...</p>
+                                </div>
+                                <div id="w-success" style="display: none;">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex p-4 mb-4"><i class="bi bi-send-check-fill fs-1"></i></div>
+                                    <h3 class="fw-800">Funds Dispatched</h3>
+                                    <p class="text-muted">Transaction ID: 0x82...f92a. You will receive a notification once confirmed.</p>
+                                    <button class="btn btn-dark w-100 py-3 mt-3" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function navigate(prefix, step) {
+        // Hide all steps in the current flow (d for deposit, w for withdrawal)
+        document.querySelectorAll(`#${prefix === 'd' ? 'depositFlow' : 'withdrawFlow'} .pane-step`).forEach(p => p.classList.remove('active'));
+        // Show target step
+        document.getElementById(`${prefix}s${step}`).classList.add('active');
+        // Update bullets
+        for(let i=1; i<=5; i++) {
+            const bullet = document.getElementById(`${prefix}-s${i}`);
+            if(i <= step) bullet.classList.add('active');
+            else bullet.classList.remove('active');
+        }
+    }
+
+    function processOp(prefix) {
+        navigate(prefix, 5);
+        setTimeout(() => {
+            document.getElementById(`${prefix}-processing`).style.display = 'none';
+            document.getElementById(`${prefix}-success`).style.display = 'block';
+        }, 3000);
+    }
+</script>
+<script>
+    // Simulate Loading Event for Buttons
+    function handleLoading(btn) {
+        const spinner = btn.querySelector('.spinner-mini');
+        const originalText = btn.innerHTML;
+        
+        if (spinner) spinner.style.display = 'inline-block';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+
+        // Simulate a 1.5s server request
+        setTimeout(() => {
+            if (spinner) spinner.style.display = 'none';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            // Simple success feedback
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Success';
+            setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+        }, 1500);
+    }
+
+    // Modal Step Switcher
+    function triggerNextTab(tabSelector) {
+        const triggerEl = document.querySelector(tabSelector);
+        bootstrap.Tab.getInstance(triggerEl).show();
+    }
+</script>
+
+</body>
+</html>

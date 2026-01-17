@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>payMO | Payments - Cards & Transfers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --mp-green: #00D094;
+            --mp-dark: #1A1A1A;
+            --mp-gray: #2C3E50;
+            --mp-light: #F8F9FA;
+            --mp-border: #E9ECEF;
+            --mp-danger: #FF4757;
+            --mp-info: #0084FF;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--mp-light); color: var(--mp-dark); overflow-x: hidden; }
+
+        /* --- Base Sidebar Styles --- */
+.sidebar { 
+    width: 280px; 
+    height: 100vh; 
+    position: fixed; 
+    background: white; 
+    border-right: 1px solid var(--mp-border); 
+    z-index: 1000; 
+    transition: all 0.3s ease;
+}
+
+.sidebar-brand { padding: 30px; font-size: 1.5rem; font-weight: 800; color: var(--mp-green); }
+.brand-icon { display: none; } /* Hidden on desktop */
+
+.sidebar-link { 
+    padding: 14px 30px; 
+    display: flex; 
+    align-items: center; 
+    color: #6c757d; 
+    text-decoration: none; 
+    font-weight: 500; 
+    transition: 0.3s; 
+    white-space: nowrap;
+}
+
+.sidebar-link i { font-size: 1.3rem; margin-right: 15px; }
+
+.main-wrapper { 
+    margin-left: 280px; 
+    padding: 40px; 
+    min-height: 100vh; 
+    transition: all 0.3s ease;
+}
+
+/* --- Mobile / Small Screen Auto-Contract --- */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px; /* Contracted width */
+    }
+
+    .sidebar-brand {
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* Swap full text for a single letter logo */
+    .brand-full { display: none; }
+    .brand-icon { display: block; }
+
+    /* Hide the text labels */
+    .link-text {
+        display: none;
+    }
+
+    .sidebar-link {
+        padding: 20px;
+        justify-content: center;
+    }
+
+    .sidebar-link i {
+        margin-right: 0; /* Center the icon */
+        font-size: 1.5rem;
+    }
+
+    /* Adjust main content to fit the smaller sidebar */
+    .main-wrapper {
+        margin-left: 80px;
+        padding: 20px;
+    }
+}
+
+        /* --- Main Tab Styling --- */
+        .hub-nav { border-bottom: 2px solid var(--mp-border); margin-bottom: 30px; }
+        .hub-nav .nav-link { 
+            border: none; 
+            padding: 15px 30px; 
+            color: #6c757d; 
+            font-weight: 600; 
+            font-size: 1rem;
+            position: relative;
+            background: transparent;
+        }
+        .hub-nav .nav-link.active { color: var(--mp-dark); }
+        .hub-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--mp-green);
+        }
+
+        /* --- Card Components --- */
+        .virtual-card-preview {
+            background: linear-gradient(135deg, #2C3E50 0%, #000000 100%);
+            border-radius: 24px;
+            padding: 30px;
+            color: white;
+            position: relative;
+            /* height: 250px; */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        .card-brand-logo { font-size: 1.4rem; font-weight: 800; }
+        .card-number { font-size: 1.6rem; letter-spacing: 4px; margin: 30px 0; font-family: 'Courier New', monospace; }
+        .chip { width: 50px; height: 40px; background: linear-gradient(135deg, #ffd700, #b8860b); border-radius: 8px; margin-bottom: 10px; }
+
+        .stat-card { background: white; border-radius: 20px; border: 1px solid var(--mp-border); padding: 25px; height: 100%; transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        /* --- Action Buttons --- */
+        .btn-mp-primary { background: var(--mp-green); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; }
+        .btn-mp-dark { background: var(--mp-dark); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; }
+        .action-square { width: 100%; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border: 1px solid var(--mp-border); border-radius: 16px; transition: 0.2s; cursor: pointer; }
+        .action-square:hover { background: var(--mp-light); border-color: var(--mp-green); color: var(--mp-green); }
+        .action-square i { font-size: 1.8rem; margin-bottom: 8px; }
+
+        /* --- Modal Step System --- */
+        .modal-step { display: none; }
+        .modal-step.active { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        .step-indicator { width: 30px; height: 30px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
+        .step-indicator.active { background: var(--mp-green); color: white; }
+        .step-line { flex-grow: 1; height: 2px; background: #eee; margin-top: 15px; }
+
+        /* --- Lists & Tables --- */
+        .tx-list-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--mp-border); }
+        .icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 25px; }
+    </style>
+   
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-brand"><span class="brand-full">payMO.</span><span class="brand-icon">P.</span></div>
+    <a href="dash.html" class="sidebar-link" title="Dashboard"><i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span></a>
+    <a href="trans3.html" class="sidebar-link" title="Transactions"><i class="bi bi-arrow-left-right"></i> <span class="link-text">Transactions</span></a>
+    <a href="card1.html" class="sidebar-link active" title="Cards & Pay"><i class="bi bi-credit-card-2-front"></i> <span class="link-text">Cards & Pay</span></a>
+    <a href="wallet1.html" class="sidebar-link" title="Wallet"><i class="bi bi-wallet2"></i> <span class="link-text">Wallet</span></a>
+    <a href="account2.html" class="sidebar-link" title="Account"><i class="bi bi-person-gear"></i> <span class="link-text">Account</span></a>
+    <a href="support.html" class="sidebar-link" title="Support"><i class="bi bi-headset"></i> <span class="link-text">Support</span></a>
+</div>
+
+<div class="main-wrapper">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Payments</h1>
+            <p class="text-muted">Manage your virtual assets and global transfers.</p>
+        </div>
+        <div class="d-flex gap-3">
+            <div class="text-end">
+                <small class="text-muted d-block small">Available Balance</small>
+                <h4 class="fw-bold mb-0 text-success">$14,250.90</h4>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs hub-nav" id="hubTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#cardsContent">Virtual Cards</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="transfers-tab" data-bs-toggle="tab" data-bs-target="#transfersContent">Send & Transfer</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="pay-tab" data-bs-toggle="tab" data-bs-target="#payContent">Pay with Link</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="hubTabsContent">
+        
+        <div class="tab-pane fade show active" id="cardsContent">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="virtual-card-preview">
+                        <div class="d-flex justify-content-between">
+                            <span class="card-brand-logo">payMO.</span>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" height="20" style="filter: brightness(0) invert(1);">
+                        </div>
+                        <div class="chip"></div>
+                        <div class="card-number">4588 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 8829</div>
+                        <div class="d-flex justify-content-between">
+                            <div><small class="opacity-75 d-block">CARD HOLDER</small><span class="fw-bold">ALEXANDER PAYMO</span></div>
+                            <div><small class="opacity-75 d-block">EXPIRY</small><span class="fw-bold">09/27</span></div>
+                            <div><small class="opacity-75 d-block">CVV</small><span class="fw-bold">***</span></div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6"><button class="action-square" data-bs-toggle="modal" data-bs-target="#fundCardModal"><i class="bi bi-plus-circle text-success"></i><small class="fw-bold">Add Funds</small></button></div>
+                        <div class="col-6"><button class="action-square"><i class="bi bi-eye text-primary"></i><small class="fw-bold">Show Details</small></button></div>
+                        <div class="col-6"><button class="action-square"><i class="bi bi-snow text-info"></i><small class="fw-bold">Freeze Card</small></button></div>
+                        <div class="col-6"><button class="action-square" data-bs-toggle="modal" data-bs-target="#editLimitModal"><i class="bi bi-sliders text-dark"></i><small class="fw-bold">Limits</small></button></div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="stat-card">
+                        <h5 class="fw-bold mb-4">Card Analytics</h5>
+                        <div class="row text-center mb-4">
+                            <div class="col-4 border-end">
+                                <small class="text-muted d-block">Spent this month</small>
+                                <h4 class="fw-bold">$1,240.00</h4>
+                            </div>
+                            <div class="col-4 border-end">
+                                <small class="text-muted d-block">Transactions</small>
+                                <h4 class="fw-bold">24</h4>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Limit Used</small>
+                                <h4 class="fw-bold text-warning">45%</h4>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-3">Recent Card Activity</h6>
+                        <div class="tx-list-item">
+                            <div class="icon-box bg-light"><i class="bi bi-netflix text-danger"></i></div>
+                            <div class="flex-grow-1"><p class="mb-0 fw-bold">Netflix Subscription</p><small class="text-muted">Digital Services</small></div>
+                            <div class="text-end"><p class="mb-0 fw-bold text-danger">-$15.99</p><small class="text-muted">Yesterday</small></div>
+                        </div>
+                        <div class="tx-list-item">
+                            <div class="icon-box bg-light"><i class="bi bi-amazon text-dark"></i></div>
+                            <div class="flex-grow-1"><p class="mb-0 fw-bold">Amazon.com</p><small class="text-muted">E-commerce</small></div>
+                            <div class="text-end"><p class="mb-0 fw-bold text-danger">-$89.50</p><small class="text-muted">Oct 12</small></div>
+                        </div>
+                        <button class="btn btn-link w-100 mt-3 text-decoration-none text-muted fw-bold">View Card Statement</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="transfersContent">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="stat-card">
+                        <h5 class="fw-bold mb-4">New Transfer</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Recipient Name</label>
+                                <input type="text" class="form-control border-0 bg-light p-3" placeholder="Enter full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Account Number / IBAN</label>
+                                <input type="text" class="form-control border-0 bg-light p-3" placeholder="e.g. GB12 3456...">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Select Bank</label>
+                                <select class="form-select border-0 bg-light p-3">
+                                    <option selected>Choose bank...</option>
+                                    <option>Chase Bank (USA)</option>
+                                    <option>HSBC (UK)</option>
+                                    <option>Equity Bank (Kenya)</option>
+                                    <option>Standard Chartered</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Amount to Send (USD)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-0 bg-light fw-bold">$</span>
+                                    <input type="number" class="form-control border-0 bg-light p-3 fs-5 fw-bold" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-light p-4 rounded-4 mb-4">
+                            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Transfer Fee</span><span class="fw-bold">$0.00</span></div>
+                            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Arrival Time</span><span class="fw-bold text-success">Instant</span></div>
+                            <div class="d-flex justify-content-between"><span class="text-muted">Exchange Rate</span><span class="fw-bold">1 USD = 1 USD</span></div>
+                        </div>
+                        <button class="btn btn-mp-primary w-100 py-3" data-bs-toggle="modal" data-bs-target="#transferConfirmModal">Confirm Transfer</button>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="stat-card">
+                        <h5 class="fw-bold mb-4">Recents</h5>
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <div class="text-center" style="width: 70px;">
+                                <img src="https://ui-avatars.com/api/?name=Sarah+J&background=random" class="rounded-circle mb-2" width="50">
+                                <small class="d-block text-truncate fw-bold">Sarah J</small>
+                            </div>
+                            <div class="text-center" style="width: 70px;">
+                                <img src="https://ui-avatars.com/api/?name=Mark+R&background=random" class="rounded-circle mb-2" width="50">
+                                <small class="d-block text-truncate fw-bold">Mark R</small>
+                            </div>
+                            <div class="text-center" style="width: 70px;">
+                                <img src="https://ui-avatars.com/api/?name=Apple&background=000" class="rounded-circle mb-2" width="50">
+                                <small class="d-block text-truncate fw-bold">Apple</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <h6 class="fw-bold mb-3">Saved Bank Accounts</h6>
+                        <div class="p-3 bg-light rounded-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div><p class="mb-0 fw-bold small">Chase Personal</p><small class="text-muted">...9921</small></div>
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </div>
+                        <div class="p-3 bg-light rounded-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div><p class="mb-0 fw-bold small">Business Savings</p><small class="text-muted">...4402</small></div>
+                            <i class="bi bi-star text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="payContent">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-6">
+                    <div class="stat-card text-center p-5">
+                        <div class="icon-box bg-success bg-opacity-10 text-success mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-link-45deg fs-1"></i>
+                        </div>
+                        <h3 class="fw-bold">Payment Links</h3>
+                        <p class="text-muted px-lg-5">Create a secure link and send it to anyone. They can pay you using cards, crypto, or payMO wallet even if they don't have an account.</p>
+                        <button class="btn btn-mp-dark px-5 py-3 mt-3" data-bs-toggle="modal" data-bs-target="#payLinkModal">
+                            Generate New Link
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="stat-card">
+                        <h5 class="fw-bold mb-4">Active Links</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="small text-muted">
+                                    <tr>
+                                        <th>PURPOSE</th>
+                                        <th>AMOUNT</th>
+                                        <th>STATUS</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="fw-bold">Freelance Design</span><br><small class="text-muted">payMO.me/x29...</small></td>
+                                        <td>$450.00</td>
+                                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                        <td><i class="bi bi-three-dots"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="fw-bold">Donation Link</span><br><small class="text-muted">payMO.me/don...</small></td>
+                                        <td>Open</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td><i class="bi bi-three-dots"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="fundCardModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 28px;">
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                    <div class="text-center"><div class="step-indicator active" id="s1-ind">1</div><small class="small">Source</small></div>
+                    <div class="step-line"></div>
+                    <div class="text-center"><div class="step-indicator" id="s2-ind">2</div><small class="small">Review</small></div>
+                    <div class="step-line"></div>
+                    <div class="text-center"><div class="step-indicator" id="s3-ind">3</div><small class="small">Finish</small></div>
+                </div>
+
+                <div class="modal-step active" id="fundStep1">
+                    <h5 class="fw-bold mb-3">Add Funds to Card</h5>
+                    <label class="form-label small fw-bold">Select Funding Source</label>
+                    <div class="p-3 border rounded-4 mb-3 d-flex align-items-center cursor-pointer bg-light">
+                        <i class="bi bi-wallet2 fs-4 me-3 text-success"></i>
+                        <div class="flex-grow-1"><p class="mb-0 fw-bold">payMO Wallet</p><small class="text-muted">Balance: $14,250.90</small></div>
+                        <input type="radio" checked name="source">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Amount to Add</label>
+                        <input type="number" class="form-control border-0 bg-light p-3 fs-4 fw-bold" id="fundAmount" placeholder="0.00">
+                    </div>
+                    <button class="btn btn-mp-primary w-100 py-3" onclick="goToStep('fund', 2)">Next: Review Details</button>
+                </div>
+
+                <div class="modal-step" id="fundStep2">
+                    <h5 class="fw-bold mb-3">Confirm Funding</h5>
+                    <div class="bg-light p-4 rounded-4 mb-4">
+                        <div class="d-flex justify-content-between mb-3"><span class="text-muted">Target Card</span><span class="fw-bold">Visa ...8829</span></div>
+                        <div class="d-flex justify-content-between mb-3"><span class="text-muted">Funding Amount</span><span class="fw-bold">$100.00</span></div>
+                        <div class="d-flex justify-content-between mb-3"><span class="text-muted">Service Charge (1.5%)</span><span class="fw-bold">$1.50</span></div>
+                        <hr>
+                        <div class="d-flex justify-content-between"><span class="fw-bold">Total Deduction</span><span class="fw-bold text-danger">$101.50</span></div>
+                    </div>
+                    <div class="alert alert-info border-0 rounded-3 small"><i class="bi bi-info-circle me-2"></i> Funds will be available for spending immediately.</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light flex-fill py-3" onclick="goToStep('fund', 1)">Back</button>
+                        <button class="btn btn-mp-primary flex-fill py-3" onclick="processSimulation('fund')">Confirm & Pay</button>
+                    </div>
+                </div>
+
+                <div class="modal-step text-center" id="fundStep3">
+                    <div id="fundProcessing">
+                        <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <h5 class="fw-bold">Processing Transaction</h5>
+                        <p class="text-muted">Securing your funds with bank-grade encryption...</p>
+                    </div>
+                    <div id="fundSuccess" style="display: none;">
+                        <div class="icon-box bg-success text-white mx-auto mb-3" style="width: 70px; height: 70px; border-radius: 50%;">
+                            <i class="bi bi-check-lg fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold">Success!</h4>
+                        <p class="text-muted">Your card has been funded. New card balance: <strong>$1,450.00</strong></p>
+                        <button class="btn btn-mp-dark w-100 py-3" data-bs-dismiss="modal">Great, thanks!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="payLinkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 28px;">
+            <div class="modal-body p-4">
+                <h5 class="fw-bold mb-4">How "Pay with Link" Works</h5>
+                <div class="d-flex mb-4">
+                    <div class="icon-box bg-light text-dark flex-shrink-0">1</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Generate Your Link</h6>
+                        <p class="small text-muted">Set a fixed amount or let the payer choose. Add a description for what the payment is for.</p>
+                    </div>
+                </div>
+                <div class="d-flex mb-4">
+                    <div class="icon-box bg-light text-dark flex-shrink-0">2</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Share Anywhere</h6>
+                        <p class="small text-muted">Send the link via WhatsApp, Email, or DM. No bank details required from your side.</p>
+                    </div>
+                </div>
+                <div class="d-flex mb-4">
+                    <div class="icon-box bg-light text-dark flex-shrink-0">3</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Receiver Pays Easily</h6>
+                        <p class="small text-muted">The recipient clicks the link and pays using their preferred method. Funds hit your payMO wallet instantly.</p>
+                    </div>
+                </div>
+                <div class="bg-warning bg-opacity-10 p-3 rounded-4 mb-4">
+                    <div class="d-flex"><i class="bi bi-shield-check text-warning fs-4 me-3"></i>
+                        <p class="small text-dark mb-0 fw-medium">All payments are escrow-protected. You can refund the payer with one click if needed.</p>
+                    </div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6"><button class="btn btn-light w-100 py-3" data-bs-dismiss="modal">Close</button></div>
+                    <div class="col-6"><button class="btn btn-mp-green text-white w-100 py-3 fw-bold" onclick="alert('Link generator would open here in full version')">Create Link</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function goToStep(prefix, stepNum) {
+        // Hide all steps
+        document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+        // Show target step
+        document.getElementById(prefix + 'Step' + stepNum).classList.add('active');
+        
+        // Update indicators
+        for(let i=1; i<=3; i++) {
+            const ind = document.getElementById(prefix.charAt(0) + i + '-ind');
+            if(i <= stepNum) ind.classList.add('active');
+            else ind.classList.remove('active');
+        }
+    }
+
+    function processSimulation(prefix) {
+        goToStep(prefix, 3);
+        const processing = document.getElementById(prefix + 'Processing');
+        const success = document.getElementById(prefix + 'Success');
+        
+        // Simulate network delay
+        setTimeout(() => {
+            processing.style.display = 'none';
+            success.style.display = 'block';
+        }, 2500);
+    }
+</script>
+<script>
+    // Simulate Loading Event for Buttons
+    function handleLoading(btn) {
+        const spinner = btn.querySelector('.spinner-mini');
+        const originalText = btn.innerHTML;
+        
+        if (spinner) spinner.style.display = 'inline-block';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+
+        // Simulate a 1.5s server request
+        setTimeout(() => {
+            if (spinner) spinner.style.display = 'none';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            // Simple success feedback
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Success';
+            setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+        }, 1500);
+    }
+
+    // Modal Step Switcher
+    function triggerNextTab(tabSelector) {
+        const triggerEl = document.querySelector(tabSelector);
+        bootstrap.Tab.getInstance(triggerEl).show();
+    }
+</script>
+
+
+</body>
+</html>

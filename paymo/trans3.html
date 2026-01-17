@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>payMO | Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --payMO-green: #00D094;
+            --payMO-dark-gray: #2C3E50;
+            --payMO-light-bg: #F8F9FA;
+            --transition-speed: 0.3s;
+            --sidebar-width: 260px;
+            --sidebar-mobile-width: 80px;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--payMO-light-bg); 
+            color: var(--payMO-dark-gray); 
+            margin: 0;
+        }
+
+        /* --- Sidebar Base Styles --- */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            height: 100vh; 
+            position: fixed; 
+            background: white; 
+            border-right: 1px solid #e9ecef; 
+            z-index: 1000; 
+            transition: all var(--transition-speed) ease;
+        }
+
+        .sidebar-link { 
+            padding: 12px 25px; 
+            display: flex; 
+            align-items: center; 
+            color: #6c757d; 
+            text-decoration: none; 
+            transition: 0.2s; 
+            border-left: 4px solid transparent; 
+            white-space: nowrap;
+        }
+
+        .sidebar-link i { 
+            font-size: 1.2rem; 
+            min-width: 25px; 
+            margin-right: 15px; 
+        }
+
+        .sidebar-link:hover, .sidebar-link.active { 
+            color: var(--payMO-green); 
+            background: #f0fffb; 
+            border-left: 4px solid var(--payMO-green); 
+        }
+
+        .main-content { 
+            margin-left: var(--sidebar-width); 
+            padding: 30px; 
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* --- Auto-Collapse for Mobile (< 768px) --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-mobile-width);
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-mobile-width);
+                padding: 20px;
+            }
+
+            /* Hide text labels and the 'ay' and 'O.' in the logo */
+            .link-text, .logo-text-ext {
+                display: none;
+            }
+
+            .sidebar-link {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar-link i {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+
+            .sidebar .p-4 {
+                text-align: center;
+                padding: 1.5rem 0 !important;
+            }
+        }
+
+        /* --- UI Elements --- */
+        .mp-card { background: white; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.02); overflow: hidden; }
+        
+        .nav-pills-payMO .nav-link {
+            color: #6c757d;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 20px;
+            margin-right: 10px;
+        }
+        .nav-pills-payMO .nav-link.active {
+            background-color: var(--payMO-green) !important;
+            color: white !important;
+        }
+
+        .transaction-row { transition: background 0.2s; cursor: pointer; border-bottom: 1px solid #f8f9fa; }
+        .transaction-row:hover { background-color: #fcfdfd; }
+
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-success { background: #e6fcf5; color: #087f5b; }
+        .status-pending { background: #fff9db; color: #f08c00; }
+
+        .search-input { background: #f1f3f5; border: none; border-radius: 12px; padding: 10px 20px 10px 45px; }
+
+        .btn-payMO-dark { background-color: var(--payMO-dark-gray); color: white; border-radius: 10px; transition: 0.3s; }
+        .btn-payMO-dark:hover { background-color: #1a252f; color: white; }
+        
+        /* Animation */
+        .animate-slide { animation: slideIn 0.4s ease forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar d-flex flex-column">
+    <div class="p-4 mb-4">
+        <h3 class="fw-bold" style="color: var(--payMO-green);">
+            p<span class="logo-text-ext">ay</span><span style="color: var(--payMO-dark-gray);">M<span class="logo-text-ext">O.</span></span>
+        </h3>
+    </div>
+    <a href="dash.html" class="sidebar-link" title="Dashboard">
+        <i class="bi bi-grid-fill"></i> 
+        <span class="link-text">Dashboard</span>
+    </a>
+    <a href="trans3.html" class="sidebar-link active" title="Transactions">
+        <i class="bi bi-arrow-left-right"></i> 
+        <span class="link-text">Transactions</span>
+    </a>
+    <a href="card1.html" class="sidebar-link" title="Cards & Pay">
+        <i class="bi bi-credit-card-2-front"></i> 
+        <span class="link-text">Cards & Pay</span>
+    </a>
+    <a href="wallet1.html" class="sidebar-link" title="Wallet">
+        <i class="bi bi-wallet2"></i> 
+        <span class="link-text">Wallet</span>
+    </a>
+    <a href="account2.html" class="sidebar-link" title="Account">
+        <i class="bi bi-person-gear"></i> 
+        <span class="link-text">Account</span>
+    </a>
+    <a href="support.html" class="sidebar-link" title="Support">
+        <i class="bi bi-headset"></i> 
+        <span class="link-text">Support</span>
+    </a>
+</div>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-end mb-4 animate-slide">
+        <div>
+            <h2 class="fw-bold">Transactions</h2>
+            <p class="text-muted mb-0">Monitor and export your financial activity</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" style="border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="bi bi-sliders2 me-2"></i> Filters
+            </button>
+            <button class="btn btn-payMO-dark px-4" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="bi bi-download me-2"></i> Export PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="mp-card p-3 mb-4 animate-slide">
+        <div class="d-flex justify-content-between align-items-center">
+            <ul class="nav nav-pills nav-pills-payMO" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-all-tab" data-bs-toggle="pill" data-bs-target="#pills-all" type="button" role="tab">All Activity</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-income-tab" data-bs-toggle="pill" data-bs-target="#pills-income" type="button" role="tab">Income</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-expenses-tab" data-bs-toggle="pill" data-bs-target="#pills-expenses" type="button" role="tab">Expenses</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-refunds-tab" data-bs-toggle="pill" data-bs-target="#pills-refunds" type="button" role="tab">Refunds</button>
+                </li>
+            </ul>
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" class="form-control search-input" placeholder="Search transactions...">
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content animate-slide" id="pills-tabContent" style="animation-delay: 0.1s;">
+        
+        <div class="tab-pane fade show active" id="pills-all" role="tabpanel">
+            <div class="mp-card">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4 border-0 py-3">Recipient/Sender</th>
+                            <th class="border-0 py-3">Date</th>
+                            <th class="border-0 py-3">Amount</th>
+                            <th class="border-0 py-3">Status</th>
+                            <th class="border-0 py-3 text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="transaction-row" data-bs-toggle="modal" data-bs-target="#txDetailModal">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center py-2">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3"><i class="bi bi-apple fs-5"></i></div>
+                                    <div><p class="mb-0 fw-bold">Apple Store</p><small class="text-muted">Expense</small></div>
+                                </div>
+                            </td>
+                            <td><small class="fw-semibold">Oct 24, 2023</small></td>
+                            <td><span class="fw-bold text-danger">-$9.99</span></td>
+                            <td><span class="status-badge status-success">Completed</span></td>
+                            <td class="text-end pe-4"><i class="bi bi-three-dots text-muted"></i></td>
+                        </tr>
+                        <tr class="transaction-row">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center py-2">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle p-2 me-3"><i class="bi bi-bank fs-5"></i></div>
+                                    <div><p class="mb-0 fw-bold">Salary Deposit</p><small class="text-muted">Income</small></div>
+                                </div>
+                            </td>
+                            <td><small class="fw-semibold">Oct 23, 2023</small></td>
+                            <td><span class="fw-bold text-success">+$4,500.00</span></td>
+                            <td><span class="status-badge status-success">Completed</span></td>
+                            <td class="text-end pe-4"><i class="bi bi-three-dots text-muted"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-income" role="tabpanel">
+            <div class="mp-card">
+                <table class="table align-middle mb-0">
+                    <tbody>
+                        <tr class="transaction-row">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle p-2 me-3"><i class="bi bi-arrow-down-left fs-5"></i></div>
+                                    <div><p class="mb-0 fw-bold">Salary Deposit</p><small class="text-muted">External Bank</small></div>
+                                </div>
+                            </td>
+                            <td><small class="fw-semibold">Oct 23, 2023</small></td>
+                            <td><span class="fw-bold text-success">+$4,500.00</span></td>
+                            <td><span class="status-badge status-success">Completed</span></td>
+                            <td class="text-end pe-4"><i class="bi bi-three-dots text-muted"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-expenses" role="tabpanel">
+            <div class="mp-card">
+                <table class="table align-middle mb-0">
+                    <tbody>
+                        <tr class="transaction-row">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-2 me-3"><i class="bi bi-cart fs-5"></i></div>
+                                    <div><p class="mb-0 fw-bold">Apple Store</p><small class="text-muted">Software</small></div>
+                                </div>
+                            </td>
+                            <td><small class="fw-semibold">Oct 24, 2023</small></td>
+                            <td><span class="fw-bold text-danger">-$9.99</span></td>
+                            <td><span class="status-badge status-success">Completed</span></td>
+                            <td class="text-end pe-4"><i class="bi bi-three-dots text-muted"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-refunds" role="tabpanel">
+            <div class="mp-card p-5 text-center text-muted">
+                <i class="bi bi-slash-circle fs-1 mb-3 d-block"></i>
+                <p>No refunds recorded in this period.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 20px;">
+            <div class="modal-body text-center p-4">
+                <div class="bg-light rounded-circle d-inline-block p-3 mb-3">
+                    <i class="bi bi-file-earmark-pdf text-danger fs-1"></i>
+                </div>
+                <h5 class="fw-bold">Export Report</h5>
+                <p class="text-muted small">Generate a PDF statement for all transactions in the current view.</p>
+                <div class="bg-light p-2 rounded mb-3 text-start">
+                    <div class="form-check small">
+                        <input class="form-check-input" type="checkbox" checked id="incBalance">
+                        <label class="form-check-label" for="incBalance">Include closing balance</label>
+                    </div>
+                </div>
+                <button class="btn btn-payMO-dark w-100 py-2 mb-2" id="confirmExportBtn" onclick="simulateDownload(this)">
+                    Proceed to Download
+                </button>
+                <button class="btn btn-link text-muted small w-100 text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="txDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 20px;">
+            <div class="modal-body text-center p-4">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-block p-3 mb-3">
+                    <i class="bi bi-check2-circle fs-1"></i>
+                </div>
+                <h5 class="fw-bold">Payment Successful</h5>
+                <p class="text-muted small">Transaction ID: MP-99283410</p>
+                <div class="bg-light rounded-3 p-3 text-start mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small text-muted">Total Amount</span>
+                        <span class="fw-bold">$9.99</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Fee</span>
+                        <span class="fw-bold">$0.00</span>
+                    </div>
+                </div>
+                <button class="btn btn-payMO w-100 py-2 mb-2">Download Receipt</button>
+                <button class="btn btn-light w-100 py-2" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="filterModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 24px;">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold">Filter Transactions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <label class="form-label fw-semibold small">Date Range</label>
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><input type="date" class="form-control border-0 bg-light p-2"></div>
+                    <div class="col-6"><input type="date" class="form-control border-0 bg-light p-2"></div>
+                </div>
+                <label class="form-label fw-semibold small">Currency</label>
+                <select class="form-select border-0 bg-light p-2 mb-3">
+                    <option>All Currencies</option>
+                    <option>USD - United States Dollar</option>
+                    <option>KES - Kenyan Shilling</option>
+                </select>
+                <button class="btn btn-payMO w-100 py-3 mt-2" onclick="handleLoading(this)">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function simulateDownload(btn) {
+        const originalContent = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Generating...`;
+        
+        setTimeout(() => {
+            btn.innerHTML = `<i class="bi bi-check-lg me-2"></i> Download Started`;
+            setTimeout(() => {
+                // Hide modal after success
+                const modal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+                modal.hide();
+                // Reset button
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1500);
+        }, 2000);
+    }
+</script>
+<script>
+    // Simulate Loading Event for Buttons
+    function handleLoading(btn) {
+        const spinner = btn.querySelector('.spinner-mini');
+        const originalText = btn.innerHTML;
+        
+        if (spinner) spinner.style.display = 'inline-block';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+
+        // Simulate a 1.5s server request
+        setTimeout(() => {
+            if (spinner) spinner.style.display = 'none';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            // Simple success feedback
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Success';
+            setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+        }, 1500);
+    }
+
+    // Modal Step Switcher
+    function triggerNextTab(tabSelector) {
+        const triggerEl = document.querySelector(tabSelector);
+        bootstrap.Tab.getInstance(triggerEl).show();
+    }
+</script>
+
+</body>
+</html>
