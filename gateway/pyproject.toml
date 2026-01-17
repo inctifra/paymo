@@ -13,13 +13,12 @@ dependencies = [
     "argon2-cffi>=25.1.0",
     "python-jose[cryptography]>=3.5.0",
     "tortoise-orm>=0.25.1",
+    "asyncpg>=0.31.0",
+    "tomlkit>=0.14.0",
+    "tomli-w>=1.2.0",
 ]
 
 [tool.aerich]
-tortoise_orm = "app.config.settings.TORTOISE_ORM"
-location = "./migrations"
+tortoise_orm = "config.tortoise.TORTOISE_ORM"
+location = "migrations/wise"
 src_folder = "./."
-
-[tool.poetry.scripts]
-migrate = "aerich migrate"
-upgrade = "aerich upgrade"
