@@ -3,7 +3,8 @@ from config.settings.base import settings
 from contextlib import asynccontextmanager
 from services.currencycloud.client import close_session
 
-
+from config.settings.base import TORTOISE_ORM
+from tortoise.contrib.fastapi import register_tortoise
 from routes import currency_cloud_router
 
 
@@ -17,6 +18,12 @@ app = FastAPI(
     title=f"{settings.APP_NAME} Payment Gateway", docs_url="/", lifespan=lifespan
 )
 
+register_tortoise(
+    app,
+    config=TORTOISE_ORM,
+    generate_schemas=False,
+    add_exception_handlers=True,
+)
 
 app.include_router(
     currency_cloud_router,

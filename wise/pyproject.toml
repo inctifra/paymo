@@ -39,7 +39,6 @@ dependencies = [
     # Async / Task queue
     "celery==5.5.3",
     "django-celery-beat==2.8.1",
-    "redis==6.2.0",
     "django-redis==6.0.0",
 
     # DB + Storage
