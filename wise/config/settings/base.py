@@ -89,6 +89,8 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "webpack_loader",
     "django_browser_reload",
+    "rest_framework_simplejwt",
+    "widget_tweaks",
 ]
 
 LOCAL_APPS = [
@@ -148,6 +150,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -198,6 +201,9 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "ifidel.users.context_processors.allauth_settings",
+            ],
+            "builtins": [
+                "widget_tweaks.templatetags.widget_tweaks",
             ],
         },
     },
@@ -365,7 +371,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.JWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),

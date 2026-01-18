@@ -1,0 +1,35 @@
+{% extends 'allauth/layouts/entrance.html' %}
+
+{% block content %}
+  <form action="{{ request.path }}">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold" style="color: var(--payMO-green);">payMO.</h2>
+      <p class="text-muted" id="authSubtitle">Securely login to your financial hub</p>
+    </div>
+
+    <div id="loginView">
+      <div class="mb-3">
+        <label class="form-label small fw-bold" for="{{ form.login.id_for_label }}">{{ form.login.label }}</label>
+        {% render_field form.login class='form-control' placeholder='name@paymo.com' %}
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <label class="form-label small fw-bold" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+          <a href="#" class="small auth-toggle" onclick="toggleView('forgot')">Forgot?</a>
+        </div>
+        {% render_field form.password class='form-control' id='loginPass' %}
+      </div>
+      <button class="btn btn-payMO mb-3" onclick="handleLogin()">Sign In</button>
+
+      <div class="text-center my-3 text-muted small">OR CONTINUE WITH</div>
+
+      <button class="btn btn-google mb-4"><img src="https://www.bing.com/th/id/OIP.qtXzOmjqkgkp0yLndNO0CQHaHa?w=216&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" width="18" /> Google</button>
+
+      <p class="text-center small">
+        New to payMO? <a href="{% url 'account_signup' %}" class="auth-toggle">Create Account</a>
+      </p>
+    </div>
+
+    {% include 'account/components/reset_password.html' %}
+  </form>
+{% endblock %}

@@ -1,6 +1,6 @@
-@import 'custom_bootstrap_vars';
-@import '~bootstrap/scss/bootstrap';
-
+@import "custom_bootstrap_vars";
+@import "~bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
 // project specific CSS goes here
 
 ///////////////
@@ -33,4 +33,13 @@ $red: #b94a48;
   background-color: $pink;
   border-color: $dark-pink;
   color: $red;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--payMO-light-bg);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

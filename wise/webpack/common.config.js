@@ -12,11 +12,12 @@ module.exports = {
   entry: {
     project: path.resolve(__dirname, "../static/js/project"),
     vendors: path.resolve(__dirname, "../static/js/vendors"),
+    auth: path.resolve(__dirname, "../static/js/auth"),
   },
   output: {
     path: path.resolve(__dirname, "../assets/webpack_bundles/"),
     publicPath: "/static/webpack_bundles/",
-    filename: "js/[name]-[fullhash].js",
+    filename: "js/[name]-[contenthash].js",
     chunkFilename: "js/[name]-[hash].js",
     clean: true,
   },
@@ -53,14 +54,14 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: "asset/resource",
         generator: {
-          filename: "images/[name]-[fullhash][ext][query]",
+          filename: "images/[name]-[contenthash][ext][query]",
         },
       },
       {
         test: /\.(woff2?|eot|ttf|otf)$/i,
         type: "asset/resource",
         generator: {
-          filename: "fonts/[name]-[fullhash][ext][query]",
+          filename: "fonts/[name]-[contenthash][ext][query]",
         },
       },
       {

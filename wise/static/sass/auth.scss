@@ -1,0 +1,172 @@
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.btn-payMO {
+  background-color: var(--payMO-green);
+  color: white;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  border: none;
+  width: 100%;
+}
+.btn-payMO:hover {
+  filter: brightness(0.9);
+}
+
+.btn-google {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-control {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  background: #fbfbfb;
+}
+.form-control:focus {
+  border-color: var(--payMO-green);
+  box-shadow: none;
+}
+
+.auth-toggle {
+  cursor: pointer;
+  color: var(--payMO-green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+}
+
+// .register-layout {
+.onboarding-card {
+  background: white;
+  border-radius: 32px;
+  // padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+}
+
+/* Step Indicators */
+.step-pill {
+  width: 100%;
+  height: 6px;
+  border-radius: 10px;
+  background: var(--mp-zinc-200);
+  transition: 0.4s;
+}
+.step-pill.active {
+  background: var(--mp-primary);
+}
+
+/* Form Styling */
+.form-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--mp-zinc-500);
+}
+.form-control {
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--mp-zinc-200);
+  background: var(--mp-bg);
+  font-weight: 600;
+}
+.form-control:focus {
+  border-color: var(--mp-primary);
+  box-shadow: none;
+}
+
+/* Panes Animation */
+.pane-step {
+  display: none;
+}
+.pane-step.active {
+  display: block;
+  animation: slideIn 0.4s ease forwards;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom UI Components */
+.method-card {
+  border: 2px solid var(--mp-zinc-100);
+  border-radius: 18px;
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+}
+.method-card:hover {
+  border-color: var(--mp-primary);
+  background: #f0fffb;
+}
+.method-card input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--mp-primary);
+}
+
+.upload-area {
+  border: 2px dashed var(--mp-zinc-200);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.upload-area:hover {
+  border-color: var(--mp-primary);
+  background: var(--mp-bg);
+}
+
+.btn-mp-primary {
+  background: var(--mp-primary);
+  color: white;
+  border-radius: 16px;
+  padding: 16px;
+  font-weight: 700;
+  border: none;
+  width: 100%;
+}
+.btn-mp-light {
+  background: var(--mp-zinc-100);
+  color: var(--mp-dark);
+  border-radius: 16px;
+  padding: 16px;
+  font-weight: 700;
+  border: none;
+}
+// }
