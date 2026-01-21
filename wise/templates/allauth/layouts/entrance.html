@@ -15,7 +15,7 @@
   {{ block.super }}
 {% endblock %}
 {% block title %}
-  {% block head_title %}
+  {{ block.super }} |{% block head_title %}
     {% trans 'Sign In' %}
   {% endblock %}
 {% endblock %}

@@ -59,6 +59,7 @@ dependencies = [
     "djangorestframework-simplejwt>=5.5.1",
     "httpx>=0.28.1",
     "django-widget-tweaks>=1.5.1",
+    "argon2-cffi>=25.1.0",
 ]
 
 # ==== Dev / Optional dependencies ====
@@ -208,7 +209,6 @@ ignore = [
   "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "SIM102", # sometimes it's better to nest
-  "UP038", # Checks for uses of isinstance/issubclass that take a tuple
           # of types for comparison.
           # Deactivated because it can make the code slow:
           # https://github.com/astral-sh/ruff/issues/7871
@@ -225,4 +225,5 @@ force-single-line = true
 [dependency-groups]
 dev = [
     "rav>=0.1.1",
+    "ruff>=0.14.13",
 ]

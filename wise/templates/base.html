@@ -8,52 +8,67 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
     <title>
       {% block title %}
-        Django Starter Template
+        Paymo – Fast, Secure International Money Transfers & Global Payments
       {% endblock %}
     </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="lms system" />
-    <meta name="author" content="kwasa" />
-    <link rel="icon" href="{% webpack_static 'images/favicons/favicon.ico' %}" />
-    {% block css %}
-      <!-- Your stuff: Third-party CSS libraries go here -->
-      <!-- This file stores project-specific CSS -->
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary SEO -->
+    <meta name="description" content="Paymo is a fast, secure, and low-cost platform for international money transfers, cross-border payments, and global financial transactions." />
+    <meta name="keywords" content="international money transfer, cross border payments, global payments, send money abroad, Paymo" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Paymo" />
+
+    <!-- Trust & UX -->
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- Internationalization -->
+    <meta http-equiv="content-language" content="{{ LANGUAGE_CODE }}" />
+
+    <!-- Favicon (placeholder) -->
+    <link rel="icon" href="{% webpack_static 'images/favicons/favicon.ico' %}" />
+
+    {% block css %}
+      <!-- Third-party & project-specific CSS -->
       {% render_bundle 'project' 'css' %}
     {% endblock %}
-    <!--  Le javascript
-    ==================================================  -->
-    {# Placed at the top of the document so pages load faster with defer #}
+
+    <!--   JavaScript
+    ==================================================   -->
+    {# Placed at the top so pages load faster with defer #}
     {% block javascript %}
-      <!-- Vendor dependencies bundled as one file -->
+      <!-- Vendor dependencies -->
       {% render_bundle 'vendors' 'js' attrs='defer' %}
 
-      <!-- place project specific Javascript in this file -->
-
+      <!-- Project-specific JavaScript -->
       {% render_bundle 'project' 'js' attrs='defer' %}
     {% endblock %}
 
     {% block extra_head %}
-
+      {# Page-specific meta tags (OpenGraph, Twitter, etc.) go here #}
     {% endblock %}
   </head>
+
   <body class="{% block bodyclass %}
+
     {% endblock %}">
     {% block body %}
       <div class="mb-1">
         <nav class="navbar navbar-expand-md navbar-light bg-light">
           <div class="container-fluid">
             <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <a class="navbar-brand" href="{% url 'home' %}">ifidel</a>
+            <a class="navbar-brand" href="{% url 'dashboard:home' %}">ifidel</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
+                  <a class="nav-link" href="{% url 'dashboard:home' %}">Home <span class="visually-hidden">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'about' %}">About</a>
+                  <a class="nav-link" href="{% url 'dashboard:about' %}">About</a>
                 </li>
                 {% if request.user.is_authenticated %}
                   <li class="nav-item">
@@ -84,6 +99,8 @@
         {% if messages %}
           {% for message in messages %}
             <div class="alert alert-dismissible {% if message.tags %}
+                
+                
                 alert-{{ message.tags }}
               {% endif %}">
               {{ message }}

@@ -23,6 +23,7 @@
     "pixrem",
     "pytest",
     "runserver",
+    "signup",
     "SOCIALACCOUNT",
     "staticfiles",
     "webpackbar"

@@ -1,32 +1,90 @@
 {% extends 'allauth/layouts/entrance.html' %}
+{% load webpack_static from webpack_loader %}
 
 {% block content %}
-  <form action="{{ request.path }}">
+  <form action="{{ request.path }}" method="post" novalidate>
+    {% csrf_token %}
+
     <div class="text-center mb-4">
       <h2 class="fw-bold" style="color: var(--payMO-green);">payMO.</h2>
       <p class="text-muted" id="authSubtitle">Securely login to your financial hub</p>
     </div>
 
+    {# ================= NON-FIELD ERRORS ================= #}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger small" role="alert">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <div id="loginView">
+      {# ================= LOGIN FIELD ================= #}
       <div class="mb-3">
         <label class="form-label small fw-bold" for="{{ form.login.id_for_label }}">{{ form.login.label }}</label>
-        {% render_field form.login class='form-control' placeholder='name@paymo.com' %}
+
+        {% if form.login.errors %}
+          {% render_field form.login class='form-control is-invalid' placeholder='name@paymo.com' %}
+        {% else %}
+          {% render_field form.login class='form-control' placeholder='name@paymo.com' %}
+        {% endif %}
+
+        {# FIELD ERRORS #}
+        {% if form.login.errors %}
+          <div class="invalid-feedback">
+            {% for error in form.login.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# HELP TEXT #}
+        {% if form.login.help_text %}
+          <div id="loginHelp" class="form-text small text-muted">{{ form.login.help_text }}</div>
+        {% endif %}
       </div>
+
+      {# ================= PASSWORD FIELD ================= #}
       <div class="mb-3">
         <div class="d-flex justify-content-between">
           <label class="form-label small fw-bold" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-          <a href="#" class="small auth-toggle" onclick="toggleView('forgot')">Forgot?</a>
+          {# HELP TEXT #}
+          {% if form.password.help_text %}
+            <div id="passwordHelp" class="form-text small text-muted">
+              <div class="small auth-toggle">{{ form.password.help_text }}</div>
+            </div>
+          {% endif %}
         </div>
-        {% render_field form.password class='form-control' id='loginPass' %}
+
+        {% if form.password.errors %}
+          {% render_field form.password class='form-control is-invalid' placeholder='**********' %}
+        {% else %}
+          {% render_field form.password class='form-control' placeholder='**********' %}
+        {% endif %}
+        {# FIELD ERRORS #}
+        {% if form.password.errors %}
+          <div class="invalid-feedback">
+            {% for error in form.password.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-      <button class="btn btn-payMO mb-3" onclick="handleLogin()">Sign In</button>
+
+      <button type="submit" class="btn btn-payMO mb-3 w-100">Sign In</button>
 
       <div class="text-center my-3 text-muted small">OR CONTINUE WITH</div>
 
-      <button class="btn btn-google mb-4"><img src="https://www.bing.com/th/id/OIP.qtXzOmjqkgkp0yLndNO0CQHaHa?w=216&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" width="18" /> Google</button>
+      <button type="button" class="btn btn-google mb-4 w-100">
+        {# IMAGE PLACEHOLDER #}
+        <img src="{% webpack_static 'images/socials/google.jpeg' %}" width="18" />
+        Google
+      </button>
 
       <p class="text-center small">
-        New to payMO? <a href="{% url 'account_signup' %}" class="auth-toggle">Create Account</a>
+        New to payMO?
+        <a href="{% url 'account_signup' %}" class="auth-toggle">Create Account</a>
       </p>
     </div>
 

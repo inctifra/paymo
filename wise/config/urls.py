@@ -5,18 +5,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/",
-        TemplateView.as_view(template_name="pages/about.html"),
-        name="about",
-    ),
+    path("", include("apps.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
     path("users/", include("ifidel.users.urls", namespace="users")),
@@ -65,7 +59,8 @@ if settings.DEBUG:
         ),
         path("500/", default_views.server_error),
         path("__reload__/", include("django_browser_reload.urls")),
-    # Static file serving when using Gunicorn + Uvicorn for local web socket development
+        # Static file serving when using Gunicorn + Uvicorn for local
+        # web socket development
         *staticfiles_urlpatterns(),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
@@ -75,5 +70,3 @@ if settings.DEBUG:
             path("__debug__/", include(debug_toolbar.urls)),
             *urlpatterns,
         ]
-
-

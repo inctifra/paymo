@@ -1,12 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 :root {
   --payMO-green: #00d094;
   --payMO-dark-gray: #2c3e50;
   --payMO-light-bg: #f8f9fa;
 
-     --mp-primary: #00D094;
-            --mp-dark: #0F172A;
-            --mp-zinc-100: #F1F5F9;
-            --mp-zinc-200: #E2E8F0;
-            --mp-zinc-500: #64748B;
-            --mp-bg: #F8FAFC;
+  --mp-primary: #00d094;
+  --mp-dark: #0f172a;
+  --mp-zinc-100: #f1f5f9;
+  --mp-zinc-200: #e2e8f0;
+  --mp-zinc-500: #64748b;
+  --mp-bg: #f8fafc;
+
+  // fonts
+  --google-fonts: "Google Sans";
+  --inter-fonts: "Inter";
 }

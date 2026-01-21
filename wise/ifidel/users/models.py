@@ -1,12 +1,13 @@
-
 from typing import ClassVar
-from django.db import models
+
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.db.models import CharField
 from django.db.models import EmailField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
+
 from .managers import UserManager
 
 
@@ -38,6 +39,7 @@ class User(AbstractUser):
         """
         return reverse("users:detail", kwargs={"pk": self.id})
 
+
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -51,7 +53,14 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to="avatars/", blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True)
+    country = models.CharField(max_length=2, default="KE")
 
+    KYC_STATUS = (
+        ("pending", "Pending"),
+        ("verified", "Verified"),
+        ("rejected", "Rejected"),
+    )
+    kyc_status = models.CharField(max_length=10, choices=KYC_STATUS, default="pending")
     # Useful tracking
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,4 +1,3 @@
-# ruff: noqa: E501
 import logging
 
 import sentry_sdk
@@ -8,11 +7,15 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from .base import *  # noqa: F403
+from .base import APP_NAME
+from .base import APPS_DIR
 from .base import DATABASES
+from .base import DEBUG
 from .base import INSTALLED_APPS
 from .base import REDIS_URL
 from .base import SPECTACULAR_SETTINGS
-from .base import env, DEBUG, Path, APPS_DIR, APP_NAME
+from .base import Path
+from .base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -46,6 +49,7 @@ CACHES = {
 if not DEBUG:
     try:
         from . import security as prod_security
+
         for attr in dir(prod_security):
             if attr.isupper():
                 globals()[attr] = getattr(prod_security, attr)
@@ -185,7 +189,10 @@ sentry_sdk.init(
 # -------------------------------------------------------------------------------
 # Tools that generate code samples can use SERVERS to point to the correct domain
 SPECTACULAR_SETTINGS["SERVERS"] = [
-    {"url": "https://ifidel.albinismnetwork.org/api", "description": "Production server"},
+    {
+        "url": "https://ifidel.albinismnetwork.org/api",
+        "description": "Production server",
+    },
 ]
 # Your stuff...
 # ------------------------------------------------------------------------------

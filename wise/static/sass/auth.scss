@@ -1,7 +1,17 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .auth-card {
   width: 100%;
-  max-width: 450px;
+  max-width: 500px;
   background: white;
   border-radius: 24px;
   padding: 40px;
@@ -16,9 +26,11 @@
   font-weight: 600;
   border: none;
   width: 100%;
+  border: 1px solid transparent;
 }
 .btn-payMO:hover {
   filter: brightness(0.9);
+  border: 1px solid var(--payMO-green);
 }
 
 .btn-google {
@@ -32,6 +44,9 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  &:hover {
+    border: 1px solid var(--payMO-green);
+  }
 }
 
 .form-control {
@@ -62,12 +77,8 @@
 
 // .register-layout {
 .onboarding-card {
-  background: white;
   border-radius: 32px;
-  // padding: 40px;
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
 }
 
 /* Step Indicators */
@@ -160,6 +171,10 @@
   font-weight: 700;
   border: none;
   width: 100%;
+  border: 1px solid transparent;
+  &:hover {
+    border: 1px solid var(--mp-primary);
+  }
 }
 .btn-mp-light {
   background: var(--mp-zinc-100);
