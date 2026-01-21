@@ -1,3 +1,75 @@
-{% extends "base.html" %}
+{% extends 'pages/base.html' %}
 
+{% block header_content %}
+  <h2 class="fw-bold">Welcome back, Alex</h2>
+  <p class="text-muted">Here is what's happening with your money today.</p>
+{% endblock %}
 
+{% block content %}
+  <div class="row g-4">
+    <div class="col-lg-8 animate-fade" style="animation-delay: 0.1s;">
+      <div class="mp-card p-4 balance-card mb-4">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+          <div>
+            <p class="mb-1 opacity-75">Total Combined Balance</p>
+            <h1 class="display-5 fw-bold">$42,550.00</h1>
+            <span class="badge bg-success bg-opacity-25 text-success">+2.4% this month</span>
+          </div>
+          <ul class="nav nav-pills bg-white bg-opacity-10 p-1" style="border-radius: 12px;">
+            <li class="nav-item">
+              <a class="nav-link active py-1 px-3 text-white" data-bs-toggle="pill" href="#usd">USD</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link py-1 px-3 text-white" data-bs-toggle="pill" href="#ksh">KSH</a>
+            </li>
+          </ul>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-payMO px-4 d-flex align-items-center justify-content-center gap-1">
+            <i class="bi bi-plus-lg me-1 fs-4"></i>
+            <span>Add Money</span>
+          </button>
+          <button class="btn btn-outline-light border-2 px-4" style="border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#quickTransferModal"><i class="bi bi-send me-1"></i> Send</button>
+        </div>
+      </div>
+
+      {% comment %}Linked Banks{% endcomment %}
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="mp-card p-4 h-100">
+            <div class="d-flex justify-content-between mb-3">
+              <h6 class="fw-bold">Linked Cards</h6>
+              <button class="btn btn-sm btn-none" data-bs-toggle="modal" data-bs-target="#addCardModal"><i class="bi bi-plus fs-4 fw-bolder"></i></button>
+            </div>
+            <div class="p-3 mb-2 bg-light border rounded-3 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-credit-card-fill me-3 fs-4 text-primary"></i>
+                <div>
+                  <p class="mb-0 fw-semibold">Visa Direct</p>
+                  <small class="text-muted">**** 8829</small>
+                </div>
+              </div>
+              <span class="badge bg-info text-dark">Active</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mp-card p-4 h-100">
+            <div class="d-flex justify-content-between mb-3">
+              <h6 class="fw-bold">Bank Accounts</h6>
+              <button class="btn btn-sm btn-none"><i class="bi bi-plus fs-4"></i></button>
+            </div>
+            <div class="p-3 mb-2 bg-light border rounded-3 d-flex align-items-center">
+              <i class="bi bi-bank2 me-3 fs-4 text-warning"></i>
+              <div>
+                <p class="mb-0 fw-semibold">Chase Business</p>
+                <small class="text-muted">Checking ...4410</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

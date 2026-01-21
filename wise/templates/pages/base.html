@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block body %}
+  <div class="dashboard-page">
+    {% include 'pages/components/sidebar.html' %}
+
+    <div class="main-content">
+      {% block main %}
+        {% block header %}
+          <div class="d-flex justify-content-between align-items-start mb-5 animate-fade">
+            <div class="d-none d-md-block">
+              {% block header_content %}
+
+              {% endblock %}
+            </div>
+
+            {% include 'pages/components/home/profile_dropdown.html' %}
+          </div>
+        {% endblock %}
+
+        {% block content %}
+
+        {% endblock %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

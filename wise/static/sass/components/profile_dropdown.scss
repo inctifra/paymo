@@ -1,0 +1,82 @@
+/* Base fonts */
+body,
+.dropdown-item {
+  font-family: var(--inter-fonts), sans-serif;
+}
+
+/* Avatar button */
+.avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.avatar-btn img {
+  border-radius: 50%;
+  border: 2px solid var(--payMO-green);
+  transition:
+    transform var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+/* Hover effect on avatar */
+.avatar-btn:hover img {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 208, 148, 0.4);
+}
+
+/* Dropdown menu */
+.avatar-dropdown {
+  min-width: 180px;
+  border-radius: 12px;
+  background-color: #fff;
+
+  padding: 0.5rem 0;
+  border: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition:
+    transform var(--transition-speed),
+    opacity var(--transition-speed);
+}
+
+/* Dropdown item */
+.avatar-dropdown .dropdown-item {
+  font-size: 0.9rem;
+  color: var(--mp-dark);
+
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition:
+    background-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+/* Hover effect on dropdown items */
+.avatar-dropdown .dropdown-item:hover {
+  background-color: var(--payMO-green);
+  color: #fff;
+}
+
+/* Divider styling */
+.avatar-dropdown .dropdown-divider {
+  margin: 0.3rem 0;
+  border-color: var(--mp-zinc-200);
+}
+
+/* Optional: smoother dropdown show animation */
+.dropdown-menu.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.dropdown-menu {
+  transform: translateY(-10px);
+  opacity: 0;
+  transition:
+    transform var(--transition-speed) ease,
+    opacity var(--transition-speed) ease;
+}
