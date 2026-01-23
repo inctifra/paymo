@@ -19,6 +19,7 @@
     "loglevel",
     "mailpit",
     "makemigrations",
+    "navs",
     "nosetests",
     "pixrem",
     "pytest",

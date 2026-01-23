@@ -7,7 +7,7 @@
     <div class="main-content">
       {% block main %}
         {% block header %}
-          <div class="d-flex justify-content-between align-items-start mb-5 animate-fade">
+          <div class="d-flex justify-content-between align-items-start mb-md-2 animate-fade">
             <div class="d-none d-md-block">
               {% block header_content %}
 
@@ -16,6 +16,10 @@
 
             {% include 'pages/components/home/profile_dropdown.html' %}
           </div>
+
+          {% block inner_header %}
+
+          {% endblock %}
         {% endblock %}
 
         {% block content %}

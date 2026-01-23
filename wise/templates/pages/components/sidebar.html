@@ -3,8 +3,8 @@
     <h3 class="fw-bold" style="color: var(--payMO-green);">p<span>ayMO.</span></h3>
   </div>
 
-  <a href="dash.html" class="sidebar-link active" title="Dashboard"><i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span></a>
-  <a href="trans3.html" class="sidebar-link" title="Transactions"><i class="bi bi-arrow-left-right"></i> <span class="link-text">Transactions</span></a>
+  <a href="{% url 'dashboard:home' %}" class="sidebar-link {% if request.resolver_match.view_name == 'dashboard:home' %}active{% endif %}" title="Dashboard"><i class="bi bi-grid-fill"></i> <span class="link-text">Dashboard</span></a>
+  <a href="{% url 'dashboard:transactions' %}" class="sidebar-link {% if request.resolver_match.view_name == 'dashboard:transactions' %}active{% endif %}" title="Transactions"><i class="bi bi-arrow-left-right"></i> <span class="link-text">Transactions</span></a>
   <a href="card1.html" class="sidebar-link" title="Payments"><i class="bi bi-credit-card-2-front"></i> <span class="link-text">Payments</span></a>
   <a href="wallet1.html" class="sidebar-link" title="Wallet"><i class="bi bi-wallet2"></i> <span class="link-text">Wallet</span></a>
   <a href="account2.html" class="sidebar-link" title="Account"><i class="bi bi-person-gear"></i> <span class="link-text">Account</span></a>

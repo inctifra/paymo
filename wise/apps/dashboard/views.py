@@ -5,3 +5,6 @@ def index(request):
 
 def about(request):
     return render(request, "pages/about.html")
+
+def transactions_view(request):
+    return render(request, "pages/transactions.html")
